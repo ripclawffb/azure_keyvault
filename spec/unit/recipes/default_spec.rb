@@ -6,7 +6,7 @@
 
 require 'spec_helper'
 
-describe 'microsoft_azure::default' do
+describe 'azure_keyvault::default' do
   context 'When all attributes are default, on an unspecified platform' do
     let(:chef_run) do
       ChefSpec::ServerRunner.new.converge(described_recipe)

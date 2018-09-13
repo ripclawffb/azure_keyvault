@@ -1,4 +1,3 @@
-# Author Jeff Mendoza (jemendoz@microsoft.com)
 #-------------------------------------------------------------------------
 # Copyright (c) Microsoft Open Technologies, Inc.
 #
@@ -14,14 +13,11 @@
 # limitations under the License.
 #--------------------------------------------------------------------------
 
-name              "microsoft_azure"
-maintainer        "Microsoft Open Technologies, Inc."
-maintainer_email  "jemendoz@microsoft.com"
+name              "azure_keyvault"
+maintainer        "Kris Zentner"
+maintainer_email  "krisz@microsoft.com"
 license           "Apache 2.0"
-description       "LWRPs for managing Azure resources"
+description       "LWRPs for retrieving Azure Keyvault Objects"
 long_description  IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version           "0.3.0"
-recipe            "microsoft_azure", "Installs the azure gem during compile time"
-
-depends           "xml", "~> 1.3.0"
-depends           "compat_resource"
+version           "0.4.0"
+recipe            "azure_keyvault", "Installs the azure gem during compile time"

@@ -1,45 +1,48 @@
 # helper for retrieving a secret from an azure keyvault
+require 'azure_key_vault'
+require 'azure_mgmt_msi'
+include Azure::KeyVault::V7_0
+include Azure::KeyVault::V7_0::Models
 module Azure
   module KeyVault
-    include Azure::Cookbook
 
-    def vault_secret(vault, secret_name, spn = {}, version = nil)
-      request_url = vault_request_url(vault, secret_name, version)
-      token_provider = create_token_provider(spn)
-      headers = {
-        'Authorization' => token_provider.get_authentication_header
-      }
-      http_client = Chef::HTTP.new(request_url, headers)
-      response = http_client.get(http_client.url, headers)
-      JSON.parse(response)['value']
+    def akv_get_secret(vault, secret_name, spn = {}, secret_version = nil)
+      vault_url = "https://#{vault}.vault.azure.net"
+      if secret_version.nil?
+        secret_version = ''
+      end
+      token_provider = create_token_credentials(spn)
+      credentials = MsRest::TokenCredentials.new(token_provider)
+      client = KeyVaultClient.new(credentials)
+      response = (client.get_secret(vault_url,secret_name,secret_version)).value
+      return response
     end
 
     private
 
     def token_audience
-      setup_arm_compute
       @audience ||= MsRestAzure::ActiveDirectoryServiceSettings.new.tap do |s|
         s.authentication_endpoint = 'https://login.windows.net/'
         s.token_audience = 'https://vault.azure.net'
       end
     end
 
-    def create_token_provider(spn)
-      validate_service_principal!(spn)
-      tenant_id = spn['tenant_id']
-      client_id = spn['client_id']
-      secret = spn['secret']
-      @token_provider ||= begin
-        MsRestAzure::ApplicationTokenProvider.new(tenant_id, client_id, secret, token_audience)
+    def create_token_credentials(spn)
+      # We assume use MSI if spn is empty.
+      # We define the port because we get a var deprecation error if not defined.
+      if spn.nil? || spn.empty?
+        @token_provider ||= begin
+          MsRestAzure::MSITokenProvider.new('50342',token_audience)
+        end
+      else
+        validate_service_principal!(spn)
+        tenant_id = spn['tenant_id']
+        client_id = spn['client_id']
+        secret = spn['secret']
+        @token_provider ||= begin
+          MsRestAzure::ApplicationTokenProvider.new(tenant_id, client_id, secret, token_audience)
+        end
       end
-    end
-
-    def vault_request_url(vault, secret_name, version, resource = 'secrets', api_version = '2015-06-01')
-      base_url = "https://#{vault}.vault.azure.net/#{resource}/#{secret_name}"
-      base_url << "/#{version}" unless version.nil?
-      base_url << "?api-version=#{api_version}"
-      Chef::Log.debug("Generated vault url: #{base_url}")
-      base_url
     end
 
     def validate_service_principal!(spn)
@@ -48,6 +51,7 @@ module Azure
       spn['secret'] ||= ENV['AZURE_CLIENT_SECRET']
       fail 'Invalid SPN info provided' unless spn['tenant_id'] && spn['client_id'] && spn['secret']
     end
+
   end
 end
 
