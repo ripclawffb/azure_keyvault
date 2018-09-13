@@ -1,6 +1,5 @@
 # helper for retrieving a secret from an azure keyvault
 require 'azure_key_vault'
-require 'azure_mgmt_msi'
 include Azure::KeyVault::V7_0
 include Azure::KeyVault::V7_0::Models
 module Azure

@@ -1,4 +1,4 @@
-# Azure Key Vault Cookbook
+# Azure Key Vault Chef Cookbook
 
 # Description
 
