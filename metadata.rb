@@ -19,5 +19,5 @@ maintainer_email  "krisz@microsoft.com"
 license           "Apache 2.0"
 description       "LWRPs for retrieving Azure Keyvault Objects"
 long_description  IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version           "0.4.0"
+version           "0.4.1"
 recipe            "azure_keyvault", "Installs the azure gem during compile time"

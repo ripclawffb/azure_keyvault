@@ -1,7 +1,11 @@
 # helper for retrieving a secret from an azure keyvault
-require 'azure_key_vault'
-include Azure::KeyVault::V7_0
-include Azure::KeyVault::V7_0::Models
+begin
+  require 'azure_key_vault'
+  include Azure::KeyVault::V7_0
+  include Azure::KeyVault::V7_0::Models
+rescue LoadError
+  Chef::Log.error("Missing gem 'azure_key_vault'. Use the default azure_keyvault recipe to install it first")
+end
 module Azure
   module KeyVault
 
