@@ -2,7 +2,7 @@
 
 # Description
 
-This is a fork of the [azure-cookbook](https://github.com/chef-partners/azure-cookbook), paired down to only support Azure Key Vault (AKV). This reduces dependancies, making the cookbook easier to support and forces it to do one thing well. This cookbook allows Chef users the option to use Azure Key Vault as a main secret store instead of Chef Vault. The library has also been refactored to use the official [Azure SDK for Ruby](https://github.com/Azure/azure-sdk-for-ruby).
+This is a fork of the [azure-cookbook](https://github.com/chef-partners/azure-cookbook), paired down to only support Azure Key Vault (AKV). This reduces dependancies, making the cookbook easier to support and forces it to do one thing well. This cookbook allows Chef users the option to use Azure Key Vault as a main secret store instead of Chef encrypted data bags. The library has also been refactored to use the official [Azure SDK for Ruby](https://github.com/Azure/azure-sdk-for-ruby).
 
 # Requirements
 
