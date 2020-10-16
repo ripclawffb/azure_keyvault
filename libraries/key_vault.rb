@@ -1,23 +1,17 @@
 # helper for retrieving a secret from an azure keyvault
-begin
-  require 'azure_key_vault'
-  include Azure::KeyVault::V7_0
-  include Azure::KeyVault::V7_0::Models
-rescue LoadError
-  Chef::Log.error("Missing gem 'azure_key_vault'. Use the default azure_keyvault recipe to install it first")
-end
 module Azure
   module KeyVault
-
     def akv_get_secret(vault, secret_name, spn = {}, secret_version = nil)
+      require 'azure_key_vault'
+
       vault_url = "https://#{vault}.vault.azure.net"
       if secret_version.nil?
         secret_version = ''
       end
       token_provider = create_token_credentials(spn)
       credentials = MsRest::TokenCredentials.new(token_provider)
-      client = KeyVaultClient.new(credentials)
-      response = (client.get_secret(vault_url,secret_name,secret_version)).value
+      client = Azure::KeyVault::V7_0::KeyVaultClient.new(credentials)
+      response = client.get_secret(vault_url, secret_name, secret_version).value
       return response
     end
 
@@ -35,7 +29,7 @@ module Azure
       # We define the port because we get a var deprecation error if not defined.
       if spn.nil? || spn.empty?
         @token_provider ||= begin
-          MsRestAzure::MSITokenProvider.new('50342',token_audience)
+          MsRestAzure::MSITokenProvider.new('50342', token_audience)
         end
       else
         validate_service_principal!(spn)
@@ -52,9 +46,8 @@ module Azure
       spn['tenant_id'] ||= ENV['AZURE_TENANT_ID']
       spn['client_id'] ||= ENV['AZURE_CLIENT_ID']
       spn['secret'] ||= ENV['AZURE_CLIENT_SECRET']
-      fail 'Invalid SPN info provided' unless spn['tenant_id'] && spn['client_id'] && spn['secret']
+      raise 'Invalid SPN info provided' unless spn['tenant_id'] && spn['client_id'] && spn['secret']
     end
-
   end
 end
 
